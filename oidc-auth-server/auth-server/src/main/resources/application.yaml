@@ -1,0 +1,59 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.security: trace
+
+spring:
+  application.name: auth-server
+  datasource:
+    platform: postgres
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/authdb
+    username: auth_usr
+    password: pwd
+    initialization-mode: always
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: false
+      hibernate:
+        ddl-auto: create
+  security:
+    user:
+      name: tina
+      password: the-password
+    oauth2:
+      authorizationserver:
+        issuer: http://auth-server:8081
+        client:
+          messages-client-oidc:
+            registration:
+              client-id: "messages-client"
+              client-secret: "$2a$12$/xdT4GByOtITcHq7SGtV.ORBMc.Vh3gu3nWz1IDuKxCiBBmG9aiLG"
+              client-name: messages-client-oidc
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "refresh_token"
+                - "client_credentials"
+              redirect-uris:
+                - "http://127.0.0.1:8083/login/oauth2/code/messages-client-oidc"
+                - "http://127.0.0.1:8083/authorized"
+              post-logout-redirect-uris:
+                - "http://127.0.0.1:8083/logged-out"
+              scopes:
+                - "openid"
+                - "profile"
+                - "message.read"
+                - "message.write"
+              require-authorization-consent: true
+
+  jackson:
+    deserialization:
+      FAIL_ON_IGNORED_PROPERTIES: false
+    serialization:
+      INDENT_OUTPUT: false
+      WRITE_DATES_AS_TIMESTAMPS: false
+      WRITE_BIGDECIMAL_AS_PLAIN: true
